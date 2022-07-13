@@ -22,7 +22,7 @@ const getAllBooking = async (req, res) => {
     try {
         const { id } = req.params
         const querySql = `
-       select sum(b.price) as total, m.name_movie, u.username, u.phone, u.email, m.image_movie, u.fullname, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'seat_booking',b.name_seat, 'movie_id', b.movie_id)) as booking_seat
+       select sum(b.price) as total, s.id as showtime_id, m.name_movie, u.username, u.phone, u.email, m.image_movie, u.fullname, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'seat_booking',b.name_seat, 'movie_id', b.movie_id)) as booking_seat
        from cinema as c 
        join booking as b on c.id = b.cinema_id
        join users as u on b.user_id = u.id
@@ -35,9 +35,40 @@ const getAllBooking = async (req, res) => {
         console.log(error)
     }
 }
+
+
+const updateSeatCancelBooking = async (req, res) => {
+    const { username } = req.params
+    try {
+        await models.seat.update({
+            status_seat: false,
+            user_booking: ''
+        }, {
+            where: {
+                user_booking: username
+            }
+        })
+        const findUser = await models.users.findOne({
+            where: {
+                username: username
+            }
+        })
+        await models.booking.destroy({
+            where: {
+                user_id: findUser.id
+            }
+        })
+        res.status(200).send({
+            message: "Update success"
+        })
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 module.exports = {
     bookingTicket,
-    getAllBooking
+    getAllBooking,
+    updateSeatCancelBooking
 }
 
 //  select   m.name_movie, u.username, u.phone, u.email, m.image_movie, u.fullname, s.start_date, s.time_start, c.name_cinema, JSON_ARRAYAGG(json_object('id', b.id, 'seat_booking', b.name_seat, 'total', SUM(b.price))) as booking_seat

@@ -59,7 +59,7 @@ const editUser = async (req, res) => {
             address: address,
             email: email,
             phone: phone,
-            role: role,
+            role_name: role,
             avatar: urlImage,
         },
             {
