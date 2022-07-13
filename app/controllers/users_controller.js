@@ -44,9 +44,17 @@ const editUser = async (req, res) => {
     const salt = bcryptjs.genSaltSync(10);
     const hashPassword = bcryptjs.hashSync(password, salt);
     try {
-        let userUpdate = await models.users.update({
+        if (password !== '') {
+            await models.users.update({
+                password: hashPassword
+            }, {
+                where: {
+                    id
+                }
+            })
+        }
+        await models.users.update({
             username: username,
-            password: hashPassword,
             fullname: fullname,
             address: address,
             email: email,
@@ -60,7 +68,9 @@ const editUser = async (req, res) => {
                 }
             }
         );
-        res.status(200).send(userUpdate)
+        res.status(200).send({
+            message: "Update Success"
+        })
     } catch (error) {
         res.status(500).send(error)
     }
@@ -94,14 +104,16 @@ const deleteUser = async (req, res) => {
 
 const checkEmail = async (req, res) => {
     const { email } = req.params
-    console.log("🚀 ~ file: user.controller.js ~ line 94 ~ checkEmail ~ email", email)
-    const emailExists = await models.users.findOne({
-        where: {
-            email: email
+    try {
+        console.log("🚀 ~ file: user.controller.js ~ line 94 ~ checkEmail ~ email", email)
+        const querySql = `
+        select u.email from users as u where u.email = "${email}"`;
+        const [results] = await sequelize.query(querySql)
+        if (results) {
+            res.status(200).json(results);
         }
-    })
-    if (emailExists) {
-        res.status(401).send(emailExists)
+    } catch (error) {
+        res.status(500).send(error)
     }
 }
 

@@ -11,7 +11,7 @@ userRouter.post('/upload-avatar', uploadImageSingle("avatar"), uploadAvatar)
 userRouter.get('/:id', [], findDetailUser)
 userRouter.put("/", uploadImageSingle("avatar"), editUser)
 userRouter.delete("/:id", deleteUser)
-userRouter.post("/:email", checkEmail)
+// userRouter.post("/:email", checkEmail)
 
 module.exports = {
     userRouter

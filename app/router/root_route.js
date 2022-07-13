@@ -2,6 +2,7 @@ const { Router } = require('express')
 const { actorRouter } = require('./actor_route')
 const { authRouter } = require('./auth_route')
 const { bookingRouter } = require('./booking_route')
+const { checkRouter } = require('./check_exsit')
 const { cinemaRouter } = require('./cinema_route')
 const { directorRouter } = require('./director_route')
 const { infoRouter } = require('./info_route')
@@ -28,6 +29,7 @@ rootRouter.use('/search', searchRouter)
 rootRouter.use('/actor', actorRouter)
 rootRouter.use('/director', directorRouter)
 rootRouter.use('/news', newsRouter)
+rootRouter.use('/check', checkRouter)
 
 
 module.exports = {
