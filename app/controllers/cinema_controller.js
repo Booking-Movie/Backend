@@ -3,17 +3,20 @@ const initModels = require('../models/init-models');
 const models = initModels(sequelize)
 
 const createCinema = async (req, res) => {
+    const { file } = req;
+    const urlImage = `http://localhost:7000/${file.path}`;
+    const { name_cinema, address } = req.body
     try {
-        const { file } = req;
-        const urlImage = `http://localhost:7000/${file.path}`;
-        const { name_cinema, address } = req.body
         const newCinema = await models.cinema.create({
             name_cinema,
             address,
             image: urlImage
         });
-
-        res.status(201).send(newCinema)
+        if (newCinema !== null) {
+            res.status(200).send({
+                message: "Create Cinema Success"
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }
@@ -34,7 +37,7 @@ const editCinema = async (req, res) => {
     const { id } = req.body
     const { name_cinema, address } = req.body
     try {
-        let userUpdate = await models.cinema.update({
+        await models.cinema.update({
             name_cinema: name_cinema,
             address: address,
             image: urlImage,
@@ -45,7 +48,9 @@ const editCinema = async (req, res) => {
                 }
             }
         );
-        res.status(200).send(userUpdate)
+        res.status(200).send({
+            message: "Edit Cinema Success"
+        })
     } catch (error) {
         res.status(500).send(error)
     }
@@ -53,15 +58,16 @@ const editCinema = async (req, res) => {
 
 
 const deleteCinema = async (req, res) => {
+    const { id } = req.params;
     try {
-        const { id } = req.params;
-        const findCinema = await models.cinema.findByPk(id);
         await models.cinema.destroy({
             where: {
                 id,
             },
         });
-        res.status(200).send(findCinema);
+        res.status(200).send({
+            message: "Delete Cinema Success"
+        });
     } catch (error) {
         res.status(500).send(error);
     }
@@ -84,16 +90,16 @@ const finAllCinemaMovie = async (req, res) => {
 }
 
 
-const cinema_movie = async (req, res) => {
+// const cinema_movie = async (req, res) => {
 
-    const data = req.body;
-    try {
-        const Junction = await models.cinema_movie.create(data);
-        res.send(Junction);
-    } catch (err) {
-        res.send(err);
-    }
-}
+//     const data = req.body;
+//     try {
+//         const Junction = await models.cinema_movie.create(data);
+//         res.send(Junction);
+//     } catch (err) {
+//         res.send(err);
+//     }
+// }
 
 module.exports = {
     createCinema,
@@ -101,5 +107,5 @@ module.exports = {
     editCinema,
     deleteCinema,
     finAllCinemaMovie,
-    cinema_movie
+    // cinema_movie
 }

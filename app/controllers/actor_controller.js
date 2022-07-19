@@ -12,10 +12,9 @@ const FindAllActor = async (req, res) => {
     }
 }
 const CreateActorDirector = async (req, res) => {
+    const { movie_id, actorList, directorList } = req.body
     try {
-        const { movie_id, actorList, directorList } = req.body
         actorList.forEach(async (actor) => {
-            console.log("🚀 ~ file: actor_controller.js ~ line 23 ~ actorList.forEach ~ actor", actor.value)
             await models.actor_movie.create({
                 movie_id: movie_id,
                 actor_id: actor.value
@@ -33,11 +32,19 @@ const CreateActorDirector = async (req, res) => {
     } catch (error) {
         res.status(500).send(error)
     }
+}
 
-
+const FindAllDirector = async (req, res) => {
+    try {
+        const ListActor = await models.director.findAll()
+        res.status(200).json(ListActor)
+    } catch (error) {
+        res.status(500).send(error)
+    }
 }
 
 module.exports = {
     FindAllActor,
-    CreateActorDirector
+    CreateActorDirector,
+    FindAllDirector
 }

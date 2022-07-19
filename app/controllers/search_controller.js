@@ -1,17 +1,26 @@
+const { Op } = require('sequelize');
 const { sequelize } = require('../config/db_connect');
 const initModels = require('../models/init-models');
+const models = initModels(sequelize)
 
 const SearchResult = async (req, res) => {
     const { term } = req.params
-    console.log("🚀 ~ file: search_controller.js ~ line 8 ~ SearchResult ~ result", term)
     try {
+        // const results = await models.movie.findAll({
+        //     where: {
+        //         name_movie: {
+        //             [Op.like]: `${term}`,
+        //         },
+        //     },
+        // });
         const querySql = `
         select * from movie as m where m.name_movie like '%${term}%'
         `;
         const [results] = await sequelize.query(querySql)
-        if (results !== null) {
-            res.status(200).json(results);
-        }
+        console.log("🚀 ~ file: search_controller.js ~ line 20 ~ SearchResult ~ results", results)
+
+        res.status(200).json(results);
+
     } catch (error) {
         res.status(500).send(error)
     }

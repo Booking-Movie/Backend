@@ -23,17 +23,21 @@ const createUser = async (req, res) => {
     const { username, password, fullname, address, email, phone, role_name } = req.body
     const salt = bcryptjs.genSaltSync(10);
     const hashPassword = bcryptjs.hashSync(password, salt);
-    const newUser = await models.users.create({
-        username,
-        password: hashPassword,
-        fullname,
-        address,
-        email,
-        phone,
-        role_name,
-        avatar: urlImage
-    });
-    res.status(201).send(newUser)
+    try {
+        const newUser = await models.users.create({
+            username,
+            password: hashPassword,
+            fullname,
+            address,
+            email,
+            phone,
+            role_name,
+            avatar: urlImage
+        });
+        res.status(201).send(newUser)
+    } catch (error) {
+        req.status(500).send(error)
+    }
 }
 
 const editUser = async (req, res) => {
@@ -88,15 +92,17 @@ const findDetailUser = async (req, res) => {
 
 
 const deleteUser = async (req, res) => {
+    const { id } = req.params;
     try {
-        const { id } = req.params;
-        const findUser = await models.users.findByPk(id);
+        const User = await models.users.findByPk(id);
         await User.destroy({
             where: {
                 id,
             },
         });
-        res.status(200).send(findUser);
+        res.status(200).send({
+            message: "Delete User Success"
+        });
     } catch (error) {
         res.status(500).send(error);
     }
@@ -105,7 +111,6 @@ const deleteUser = async (req, res) => {
 const checkEmail = async (req, res) => {
     const { email } = req.params
     try {
-        console.log("🚀 ~ file: user.controller.js ~ line 94 ~ checkEmail ~ email", email)
         const querySql = `
         select u.email from users as u where u.email = "${email}"`;
         const [results] = await sequelize.query(querySql)
@@ -118,10 +123,9 @@ const checkEmail = async (req, res) => {
 }
 
 const uploadAvatar = async (req, res) => {
-    // Lưu hình vào data base
+    const { formData, file } = req;
+    const urlImage = `http://localhost:7000/${file.path}`;
     try {
-        const { formData, file } = req;
-        const urlImage = `http://localhost:7000/${file.path}`;
         // Tìm thằng user muốn upload
         const userUploadAvatar = await models.users.findByPk(formData.username);
         // Phải thêm thuộc tính avatar bên model user

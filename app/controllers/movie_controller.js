@@ -96,7 +96,7 @@ const createMovie = async (req, res) => {
         const { file } = req;
         const urlImage = `http://localhost:7000/${file.path}`;
         const { name_movie, comming_data, des_movie, trailer, nation, director, status_movie, evaluate, time_show } = req.body
-        const newMovie = await models.movie.create({
+        await models.movie.create({
             name_movie,
             comming_data,
             des_movie,
@@ -108,7 +108,9 @@ const createMovie = async (req, res) => {
             evaluate,
             image_movie: urlImage
         });
-        res.status(201).send(newMovie)
+        res.status(201).send({
+            message: "Create Movie Success"
+        })
     } catch (error) {
         res.status(500).send(error)
     }
@@ -141,7 +143,7 @@ const updateMovie = async (req, res) => {
     const { id } = req.body
     const { name_movie, comming_data, des_movie, trailer, nation, director, status_movie, evaluate } = req.body
     try {
-        let movieUpdate = await models.movie.update({
+        await models.movie.update({
             name_movie: name_movie,
             comming_data: comming_data,
             des_movie: des_movie,
@@ -158,7 +160,9 @@ const updateMovie = async (req, res) => {
                 }
             }
         );
-        res.status(200).send(movieUpdate)
+        res.status(200).send({
+            message: 'Upload Movie Success'
+        })
     } catch (error) {
         res.status(500).send(error)
     }
@@ -167,14 +171,15 @@ const updateMovie = async (req, res) => {
 const deleteMovie = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log("🚀 ~ file: movie_controller.js ~ line 150 ~ deleteMovie ~ id", id)
-        const findMovie = await models.movie.findByPk(id)
+        await models.movie.findByPk(id)
         await models.movie.destroy({
             where: {
                 id,
             },
         })
-        res.status(200).json(findMovie)
+        res.status(200).json({
+            message: "Delete Success"
+        })
     } catch (error) {
         res.status(500).send(error);
     }
@@ -183,7 +188,7 @@ const getInfoMovie = async (req, res) => {
     try {
         const { id } = req.params;
         const querySql = `
-      select m.name_movie, s.code_theater, s.start_date, c.name_cinema, c.address from 
+      select m.name_movie, s.code_theater, s.start_date, c.name_cinema, c.address, s.time_start from 
       showtime as s
       join cinema as c on s.cinema_id = c.id 
       join cinema_movie cm on c.id = cm.cinema_id

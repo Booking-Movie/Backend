@@ -4,9 +4,7 @@ const { createShowTime, findAllSeatByShowTimeId } = require('../controllers/show
 
 const showtimeRouter = Router()
 
-showtimeRouter.post("/", createShowTime)
-// showtimeRouter.post("/create-seat", createSeat)
-// showtimeRouter.get("/get-all-seat", createSeat)
+showtimeRouter.post("/create", createShowTime)
 showtimeRouter.get("/:id", findAllSeatByShowTimeId)
 
 module.exports = {

@@ -4,23 +4,23 @@ const models = initModels(sequelize)
 
 
 const bookingTicket = async (req, res) => {
+    const { danhSachVe } = req.body
+    const { user_id, movie_id, cinema_id, user_booking, showtime_id } = req.body
     try {
-        const { danhSachVe } = req.body
-        const { user_id, movie_id, cinema_id, user_booking, showtime_id } = req.body
 
-        danhSachVe.forEach((booking) => {
-            const newInfo = models.seat.update({ status_seat: true, user_booking: user_booking }, { where: { id: booking.id } })
-            const newSeat = models.booking.create({ showtime_id: booking.showtime_id, seat_id: booking.id, name_seat: booking.name_seat, status_seat: true, price: booking.price, user_id: user_id, movie_id: movie_id, cinema_id: cinema_id })
+        danhSachVe.forEach(async (booking) => {
+            await models.seat.update({ status_seat: true, user_booking: user_booking }, { where: { id: booking.id } })
+            await models.booking.create({ showtime_id: booking.showtime_id, seat_id: booking.id, name_seat: booking.name_seat, status_seat: true, price: booking.price, user_id: user_id, movie_id: movie_id, cinema_id: cinema_id })
         })
-        res.status(200).send(danhSachVe)
+        res.status(200).json(danhSachVe)
     } catch (error) {
         res.status(500).send(error)
     }
 }
 
 const getAllBooking = async (req, res) => {
+    const { id } = req.params
     try {
-        const { id } = req.params
         const querySql = `
        select sum(b.price) as total, s.id as showtime_id, m.name_movie, u.username, u.phone, u.email, m.image_movie, u.fullname, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'seat_booking',b.name_seat, 'movie_id', b.movie_id)) as booking_seat
        from cinema as c 
@@ -32,7 +32,7 @@ const getAllBooking = async (req, res) => {
         const [results] = await sequelize.query(querySql)
         res.status(200).json(results);
     } catch (error) {
-        console.log(error)
+        res.status(500).send(error)
     }
 }
 
