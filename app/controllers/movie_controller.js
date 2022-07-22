@@ -95,7 +95,7 @@ const createMovie = async (req, res) => {
     try {
         const { file } = req;
         const urlImage = `http://localhost:7000/${file.path}`;
-        const { name_movie, comming_data, des_movie, trailer, nation, director, status_movie, evaluate, time_show } = req.body
+        const { name_movie, comming_data, des_movie, trailer, nation, status_movie, evaluate, time_show } = req.body
         await models.movie.create({
             name_movie,
             comming_data,
@@ -103,13 +103,15 @@ const createMovie = async (req, res) => {
             trailer,
             time_show,
             nation,
-            director,
             status_movie,
             evaluate,
             image_movie: urlImage
         });
         res.status(201).send({
-            message: "Create Movie Success"
+            name_movie,
+            message: "Create Movie Success",
+            status_code: 201,
+            success: true
         })
     } catch (error) {
         res.status(500).send(error)
@@ -141,7 +143,7 @@ const updateMovie = async (req, res) => {
     const { file } = req;
     const urlImage = `http://localhost:7000/${file.path}`;
     const { id } = req.body
-    const { name_movie, comming_data, des_movie, trailer, nation, director, status_movie, evaluate } = req.body
+    const { name_movie, comming_data, des_movie, trailer, nation, director, status_movie, evaluate, time_show } = req.body
     try {
         await models.movie.update({
             name_movie: name_movie,
@@ -149,6 +151,7 @@ const updateMovie = async (req, res) => {
             des_movie: des_movie,
             trailer: trailer,
             nation: nation,
+            time_show: time_show,
             director: director,
             status_movie: status_movie,
             evaluate: evaluate,
@@ -161,7 +164,10 @@ const updateMovie = async (req, res) => {
             }
         );
         res.status(200).send({
-            message: 'Upload Movie Success'
+            name: name_movie,
+            message: 'Upload Movie Success',
+            status_code: 200,
+            success: true
         })
     } catch (error) {
         res.status(500).send(error)
@@ -171,15 +177,29 @@ const updateMovie = async (req, res) => {
 const deleteMovie = async (req, res) => {
     try {
         const { id } = req.params;
-        await models.movie.findByPk(id)
+        const movie = await models.movie.findByPk(id)
+        console.log("🚀 ~ file: movie_controller.js ~ line 182 ~ deleteMovie ~ movie",)
+
         await models.movie.destroy({
             where: {
                 id,
             },
         })
-        res.status(200).json({
-            message: "Delete Success"
-        })
+        if (movie) {
+            res.status(200).json({
+                name: movie.name_movie,
+                message: "Delete Success",
+                status_code: 200,
+                success: true
+            })
+        } else {
+            res.status(403).send({
+                message: "Movie doesn't exist",
+                status_code: 403,
+                success: false
+            })
+
+        }
     } catch (error) {
         res.status(500).send(error);
     }

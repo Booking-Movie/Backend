@@ -28,6 +28,42 @@ module.exports = function(sequelize, DataTypes) {
         model: 'users',
         key: 'id'
       }
+    },
+    movie_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'movie',
+        key: 'id'
+      }
+    },
+    cinema_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'cinema',
+        key: 'id'
+      }
+    },
+    seat_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'seat',
+        key: 'id'
+      }
+    },
+    showtime_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'showtime',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
@@ -41,6 +77,32 @@ module.exports = function(sequelize, DataTypes) {
         fields: [
           { name: "id" },
           { name: "user_id" },
+          { name: "movie_id" },
+          { name: "cinema_id" },
+          { name: "seat_id" },
+          { name: "showtime_id" },
+        ]
+      },
+      {
+        name: "id",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "id" },
+        ]
+      },
+      {
+        name: "cinema_id",
+        using: "BTREE",
+        fields: [
+          { name: "cinema_id" },
+        ]
+      },
+      {
+        name: "movie_id",
+        using: "BTREE",
+        fields: [
+          { name: "movie_id" },
         ]
       },
       {
@@ -48,6 +110,20 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "user_id" },
+        ]
+      },
+      {
+        name: "seat_id",
+        using: "BTREE",
+        fields: [
+          { name: "seat_id" },
+        ]
+      },
+      {
+        name: "showtime_id",
+        using: "BTREE",
+        fields: [
+          { name: "showtime_id" },
         ]
       },
     ]

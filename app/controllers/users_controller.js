@@ -19,6 +19,7 @@ const findAllUser = async (rep, res) => {
 
 const createUser = async (req, res) => {
     const { file } = req;
+    console.log("🚀 ~ file: users_controller.js ~ line 22 ~ createUser ~ file", file)
     const urlImage = `http://localhost:7000/${file.path}`;
     const { username, password, fullname, address, email, phone, role_name } = req.body
     const salt = bcryptjs.genSaltSync(10);
@@ -34,7 +35,12 @@ const createUser = async (req, res) => {
             role_name,
             avatar: urlImage
         });
-        res.status(201).send(newUser)
+        res.status(201).json({
+            newUser,
+            message: "Create User Success",
+            status_code: 201,
+            success: true
+        })
     } catch (error) {
         req.status(500).send(error)
     }
@@ -72,8 +78,11 @@ const editUser = async (req, res) => {
                 }
             }
         );
-        res.status(200).send({
-            message: "Update Success"
+        res.status(200).json({
+            username: username,
+            message: "Update Success",
+            status_code: 200,
+            success: true
         })
     } catch (error) {
         res.status(500).send(error)
@@ -101,7 +110,10 @@ const deleteUser = async (req, res) => {
             },
         });
         res.status(200).send({
-            message: "Delete User Success"
+            username: User.username,
+            message: "Delete User Success",
+            status_code: 200,
+            success: true
         });
     } catch (error) {
         res.status(500).send(error);

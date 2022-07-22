@@ -9,14 +9,18 @@ module.exports = function(sequelize, DataTypes) {
     },
     name_movie: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     comming_data: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     des_movie: {
       type: DataTypes.TEXT,
+      allowNull: true
+    },
+    time_show: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     trailer: {
@@ -24,10 +28,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     nation: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    director: {
       type: DataTypes.STRING(255),
       allowNull: true
     },

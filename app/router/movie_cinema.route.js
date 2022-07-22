@@ -4,7 +4,7 @@ const movieCinemaRouter = Router()
 
 movieCinemaRouter.post("/", createMovieCinema);
 movieCinemaRouter.get('/:id', finAllTimeOfMovie);
-movieCinemaRouter.get('/', findAllMovies)
+// movieCinemaRouter.get('/', findAllMovies)
 movieCinemaRouter.get('/cinema-name/:id', finAllTimeOfNameCinema);
 
 

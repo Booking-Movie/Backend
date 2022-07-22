@@ -29,6 +29,10 @@ module.exports = function(sequelize, DataTypes) {
         model: 'showtime',
         key: 'id'
       }
+    },
+    user_booking: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     sequelize,

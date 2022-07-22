@@ -1,45 +1,51 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('showtime', {
+  return sequelize.define('news', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    code_theater: {
-      type: DataTypes.STRING(50),
-      allowNull: false
+    new_title: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     },
-    time_start: {
-      type: DataTypes.TIME,
-      allowNull: false
+    new_introduction: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
-    start_date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+    new_body: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
-    cinema_id: {
+    new_conclusion: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    new_image: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    type_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
+      allowNull: true,
       references: {
-        model: 'cinema',
+        model: 'news_type',
         key: 'id'
       }
     },
-    movie_id: {
+    user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
+      allowNull: true,
       references: {
-        model: 'movie',
+        model: 'users',
         key: 'id'
       }
     }
   }, {
     sequelize,
-    tableName: 'showtime',
+    tableName: 'news',
     timestamps: false,
     indexes: [
       {
@@ -48,22 +54,20 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-          { name: "cinema_id" },
-          { name: "movie_id" },
         ]
       },
       {
-        name: "movie_id",
+        name: "user_id",
         using: "BTREE",
         fields: [
-          { name: "movie_id" },
+          { name: "user_id" },
         ]
       },
       {
-        name: "cinema_id",
+        name: "type_id",
         using: "BTREE",
         fields: [
-          { name: "cinema_id" },
+          { name: "type_id" },
         ]
       },
     ]

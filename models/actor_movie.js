@@ -1,15 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('cinema_movie', {
-    cinema_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'cinema',
-        key: 'id'
-      }
-    },
+  return sequelize.define('actor_movie', {
     movie_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -19,18 +10,18 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    showtime_id: {
+    actor_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'showtime',
+        model: 'actor',
         key: 'id'
       }
     }
   }, {
     sequelize,
-    tableName: 'cinema_movie',
+    tableName: 'actor_movie',
     timestamps: false,
     indexes: [
       {
@@ -38,23 +29,15 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "cinema_id" },
           { name: "movie_id" },
-          { name: "showtime_id" },
+          { name: "actor_id" },
         ]
       },
       {
-        name: "movie_id",
+        name: "actor_id",
         using: "BTREE",
         fields: [
-          { name: "movie_id" },
-        ]
-      },
-      {
-        name: "showtime_id",
-        using: "BTREE",
-        fields: [
-          { name: "showtime_id" },
+          { name: "actor_id" },
         ]
       },
     ]

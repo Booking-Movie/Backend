@@ -31,10 +31,6 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    director: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     status_movie: {
       type: DataTypes.STRING(50),
       allowNull: true
