@@ -5,8 +5,6 @@ const dotenv = require('dotenv');
 const app = express()
 const cors = require('cors')
 
-const port = 7000;
-
 app.use(cors())
 dotenv.config();
 app.use(express.json())
@@ -16,7 +14,5 @@ app.use('/public', express.static(pathPublicDirectory))
 
 app.use("/api/v1", rootRouter)
 
-app.listen(port, () => {
-    console.log(`This is port ${port}`)
-})
+app.listen(process.env.PORT)
 
