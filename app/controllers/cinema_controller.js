@@ -31,7 +31,7 @@ const findAllCinema = async (rep, res) => {
     }
 };
 
-const editCinema = async (req, res) => {
+const updateCinema = async (req, res) => {
     const { file } = req;
     const urlImage = `http://localhost:7000/${file.path}`;
     const { id } = req.body
@@ -49,7 +49,9 @@ const editCinema = async (req, res) => {
             }
         );
         res.status(200).send({
-            message: "Edit Cinema Success"
+            message: "Edit Cinema Success",
+            status_code: 200,
+            success: true
         })
     } catch (error) {
         res.status(500).send(error)
@@ -60,52 +62,32 @@ const editCinema = async (req, res) => {
 const deleteCinema = async (req, res) => {
     const { id } = req.params;
     try {
-        await models.cinema.destroy({
+        const cinema = await models.cinema.destroy({
             where: {
                 id,
             },
         });
-        res.status(200).send({
-            message: "Delete Cinema Success"
-        });
+        if (cinema) {
+            res.status(200).json({
+                message: "Delete Cinema Success",
+                status_code: 200,
+                success: true
+            })
+        } else {
+            res.status(403).send({
+                message: "Cinema doesn't exist",
+                status_code: 403,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error);
     }
 }
 
-const finAllCinemaMovie = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const querySql = `
-        select *
-        from movie as m
-        join  cinema_movie as c_m on m.id = c_m.movie_id
-        join cinema c on c_m.cinema_id = c.id where m.id=${id} 
-        group by c.id `;
-        const [results] = await sequelize.query(querySql)
-        res.status(200).send([results]);
-    } catch (error) {
-        res.status(500).send(error)
-    }
-}
-
-
-// const cinema_movie = async (req, res) => {
-
-//     const data = req.body;
-//     try {
-//         const Junction = await models.cinema_movie.create(data);
-//         res.send(Junction);
-//     } catch (err) {
-//         res.send(err);
-//     }
-// }
-
 module.exports = {
     createCinema,
     findAllCinema,
-    editCinema,
+    updateCinema,
     deleteCinema,
-    finAllCinemaMovie,
-    // cinema_movie
 }

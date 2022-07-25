@@ -1,11 +1,11 @@
 const { Router } = require('express');
-const { bookingTicket, getAllBooking } = require('../controllers/booking_controller');
-const { isUsername } = require('../controllers/check_controller');
-const { checkEmail } = require('../controllers/users_controller');
+const { checkExistEmail, checkExistUsername } = require('../controllers/check_controller');
+const { } = require('../controllers/users_controller')
+
 const checkRouter = Router()
 
-checkRouter.get("/email/:email", checkEmail)
-checkRouter.get("/username/:username", isUsername)
+checkRouter.get("/email/:email", checkExistEmail)
+checkRouter.get("/username/:username", checkExistUsername)
 
 module.exports = {
     checkRouter

@@ -2,33 +2,7 @@ const { sequelize } = require('../config/db_connect');
 const initModels = require('../models/init-models');
 const models = initModels(sequelize)
 
-const findAllMovieNowShowing = async (req, res) => {
-    try {
-        const cinemaList = await models.movie.findAll({
-            where: {
-                status_movie: "NowShowing"
-            }
-        });
-        res.status(200).json(cinemaList);
 
-    } catch (error) {
-        res.status(500).send(error);
-    }
-}
-
-const finAllMovieCommingSoon = async (req, res) => {
-    try {
-        const movieList = await models.movie.findAll({
-            where: {
-                status_movie: "CommingSoon"
-            }
-        });
-        res.status(200).json(movieList);
-
-    } catch (error) {
-        res.status(500).send(error);
-    }
-}
 
 const findAllMovies = async (req, res) => {
     try {
@@ -42,19 +16,13 @@ const findAllMovies = async (req, res) => {
 const findDetailMovie = async (req, res) => {
     try {
         const { id } = req.params;
-        // const detailMovie = await models.movie.findOne({
-        //     where: {
-        //         id,
-        //     },
-        // });
-        const querySql = `
-        select m.id as movie_id, m.name_movie,m.comming_data,m.des_movie,m.time_show,m.nation,m.evaluate,m.image_movie, JSON_ARRAYAGG(json_object('director_id',d.id, 'name_director',d.name_director)) as director, JSON_ARRAYAGG(json_object('actor_id',a.id, 'name_actor',a.name_actor)) as actor
-     from movie as m
-    join actor_movie am on m.id = am.movie_id
-    join actor as a on am.actor_id = a.id
-    join director_movie dm on m.id = dm.movie_id
-    join director d  on dm.director_id = d.id where m.id =${id}`;
+        const querySql = `#graphql 
+    select m.id as movie_id, m.name_movie,m.comming_data,m.des_movie,m.time_show,m.nation,m.evaluate,m.image_movie,  JSON_ARRAYAGG(json_object('actor_id',a.id, 'name_actor',a.name_actor)) as actor
+    from movie as m
+    join actor_movie as am on m.id = am.movie_id
+    join actor as a on am.actor_id = a.id where m.id = ${id} group by m.id`;
         const [results] = await sequelize.query(querySql)
+        console.log("🚀 ~ file: movie_controller.js ~ line 58 ~ findDetailMovie ~ results", results)
         res.status(200).json([results]);
     } catch (error) {
         res.status(500).send(error);
@@ -63,12 +31,12 @@ const findDetailMovie = async (req, res) => {
 const finAllTimeOfMovie = async (req, res) => {
     try {
         const { id } = req.params;
-        const querySql = `
+        const querySql = `#graphql
         select c.name_cinema,c.id as cinema_id, m.id, JSON_ARRAYAGG(json_object('id',s.id, 'time_start',s.time_start, 'start_date', s.start_date)) as show_time
-     from movie as m
-    join cinema_movie as cm on m.id = cm.movie_id
-    join cinema as c on cm.cinema_id = c.id
-    join showtime as s on cm.showtime_id = s.id where m.id=${id}  group by c.id order by s.time_start`;
+        from movie as m
+        join cinema_movie as cm on m.id = cm.movie_id
+        join cinema as c on cm.cinema_id = c.id
+        join showtime as s on cm.showtime_id = s.id where m.id=${id}  group by c.id order by s.time_start`;
         const [results] = await sequelize.query(querySql)
         res.status(200).json(results);
     } catch (error) {
@@ -78,7 +46,7 @@ const finAllTimeOfMovie = async (req, res) => {
 const finAllTimeOfNameCinema = async (req, res) => {
     try {
         const { name_cinema } = req.params;
-        const querySql = `
+        const querySql = `#graphql
         select c.name_cinema JSON_ARRAYAGG(json_object('id',s.id, 'time_start',s.time_start)) as show_time
         from movie as m
         join showtime as s on m.id = s.movie_id
@@ -107,6 +75,7 @@ const createMovie = async (req, res) => {
             evaluate,
             image_movie: urlImage
         });
+
         res.status(201).send({
             name_movie,
             message: "Create Movie Success",
@@ -118,26 +87,6 @@ const createMovie = async (req, res) => {
     }
 }
 
-const createMovieCinema = (req, res) => {
-    try {
-        const { cinema_id, movie_id } = req.body
-        const newMovieCinema = models.cinema_movie.create({
-            cinema_id,
-            movie_id
-        })
-        if (newMovieCinema !== null) {
-            res.status(200).send({
-                message: "Create success"
-            })
-        } else {
-            res.status(404).send({
-                message: "Create fail"
-            })
-        }
-    } catch (error) {
-        res.status(500).send(error)
-    }
-}
 
 const updateMovie = async (req, res) => {
     const { file } = req;
@@ -178,8 +127,6 @@ const deleteMovie = async (req, res) => {
     try {
         const { id } = req.params;
         const movie = await models.movie.findByPk(id)
-        console.log("🚀 ~ file: movie_controller.js ~ line 182 ~ deleteMovie ~ movie",)
-
         await models.movie.destroy({
             where: {
                 id,
@@ -207,12 +154,12 @@ const deleteMovie = async (req, res) => {
 const getInfoMovie = async (req, res) => {
     try {
         const { id } = req.params;
-        const querySql = `
-      select m.name_movie, s.code_theater, s.start_date, c.name_cinema, c.address, s.time_start from 
-      showtime as s
-      join cinema as c on s.cinema_id = c.id 
-      join cinema_movie cm on c.id = cm.cinema_id
-      join movie as m on cm.movie_id = m.id where s.id=${id}  group by c.id order by s.time_start;
+        const querySql = `#graphql
+        select m.name_movie, s.code_theater, s.start_date, c.name_cinema, c.address, s.time_start from 
+        showtime as s
+        join cinema as c on s.cinema_id = c.id 
+        join cinema_movie cm on c.id = cm.cinema_id
+        join movie as m on cm.movie_id = m.id where s.id=${id}  group by c.id order by s.time_start;
         `;
         const [results] = await sequelize.query(querySql)
         res.status(200).json(results);
@@ -232,14 +179,11 @@ const findSeemore = async (req, res) => {
 }
 
 module.exports = {
-    findAllMovieNowShowing,
     findDetailMovie,
     finAllTimeOfMovie,
     createMovie,
     updateMovie,
     deleteMovie,
-    createMovieCinema,
-    finAllMovieCommingSoon,
     findAllMovies,
     getInfoMovie,
     findSeemore,

@@ -46,7 +46,7 @@ const createUser = async (req, res) => {
     }
 }
 
-const editUser = async (req, res) => {
+const updateUser = async (req, res) => {
     const { file } = req;
     const urlImage = `http://localhost:7000/${file.path}`;
     const { id } = req.body
@@ -109,53 +109,33 @@ const deleteUser = async (req, res) => {
                 id,
             },
         });
-        res.status(200).send({
-            username: User.username,
-            message: "Delete User Success",
-            status_code: 200,
-            success: true
-        });
+        if (User) {
+            res.status(200).send({
+                username: User.username,
+                message: "Delete User Success",
+                status_code: 200,
+                success: true
+            });
+        } else {
+            res.status(403).send({
+                username: User.username,
+                message: "User doesn't exist",
+                status_code: 403,
+                success: false
+            });
+        }
+
     } catch (error) {
         res.status(500).send(error);
     }
 }
 
-const checkEmail = async (req, res) => {
-    const { email } = req.params
-    try {
-        const querySql = `
-        select u.email from users as u where u.email = "${email}"`;
-        const [results] = await sequelize.query(querySql)
-        if (results) {
-            res.status(200).json(results);
-        }
-    } catch (error) {
-        res.status(500).send(error)
-    }
-}
 
-const uploadAvatar = async (req, res) => {
-    const { formData, file } = req;
-    const urlImage = `http://localhost:7000/${file.path}`;
-    try {
-        // Tìm thằng user muốn upload
-        const userUploadAvatar = await models.users.findByPk(formData.username);
-        // Phải thêm thuộc tính avatar bên model user
-        userUploadAvatar.avatar = urlImage;
-        await userUploadAvatar.save();
-        res.send(userUploadAvatar);
-        res.status(200).send(userUploadAvatar);
-    } catch (error) {
-        res.status(500).send(error)
-    }
-};
 
 module.exports = {
     createUser,
-    uploadAvatar,
     deleteUser,
     findAllUser,
     findDetailUser,
-    editUser,
-    checkEmail
+    updateUser
 }

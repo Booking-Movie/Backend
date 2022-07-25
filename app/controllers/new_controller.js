@@ -2,12 +2,12 @@ const { sequelize } = require('../config/db_connect');
 const initModels = require('../models/init-models');
 var models = initModels(sequelize)
 
-const GetAllNew = async (req, res) => {
+const getAllNew = async (req, res) => {
     try {
-        const querySql = `
-      select *, n.id as new_id from 
-      news as n
-      join news_type as nt on n.type_id = nt.id ;
+        const querySql = `#graphql
+        select *, n.id as new_id from 
+        news as n
+        join news_type as nt on n.type_id = nt.id ;
         `;
         const [results] = await sequelize.query(querySql)
         res.status(200).json(results);
@@ -16,12 +16,12 @@ const GetAllNew = async (req, res) => {
     }
 }
 
-const CreateNew = async (req, res) => {
+const createNew = async (req, res) => {
     try {
         const { file } = req;
         const urlImage = `http://localhost:7000/${file.path}`;
         const { new_title, new_introduction, new_body, new_conclusion, type_id, user_id } = req.body
-        const newsInfo = await models.news.create({
+        await models.news.create({
             new_title,
             new_introduction,
             new_body,
@@ -30,19 +30,22 @@ const CreateNew = async (req, res) => {
             user_id,
             new_image: urlImage
         });
-
-        res.status(200).send(newsInfo)
+        res.status(200).send({
+            message: "Create New Success",
+            status_code: 200,
+            success: true
+        })
     } catch (error) {
         res.status(500).send(error)
     }
 }
 
-const UpdateNew = async (req, res) => {
+const updateNew = async (req, res) => {
     const { file } = req;
     const urlImage = `http://localhost:7000/${file.path}`;
-    const { new_id, id, new_title, new_introduction, new_body, new_conclusion, type_id } = req.body
+    const { new_id, new_title, new_introduction, new_body, new_conclusion, type_id } = req.body
     try {
-        let updateNew = await models.news.update({
+        await models.news.update({
             new_title: new_title,
             new_introduction: new_introduction,
             new_body: new_body,
@@ -54,29 +57,46 @@ const UpdateNew = async (req, res) => {
                 id: new_id
             }
         })
-        res.status(200).json(updateNew)
+        res.status(200).json({
+            message: "Update New Success",
+            status_code: 200,
+            success: true
+        })
     } catch (error) {
         res.status(500).send(error)
     }
 }
-const DeleteNew = async (req, res) => {
+const deleteNew = async (req, res) => {
     try {
         const { new_id } = req.params
-        await models.news.destroy({
+        const newInfo = await models.news.destroy({
             where: {
                 id: new_id
             }
         })
+        if (newInfo) {
+            res.status(200).json({
+                message: "Delete New Success",
+                status_code: 200,
+                success: true
+            })
+        } else {
+            res.status(403).send({
+                message: "New doesn't exist",
+                status_code: 403,
+                success: false
+            })
+        }
         res.status(200).json({
-            message: "Delete Success"
+
         })
     } catch (error) {
         res.status(500).send(error)
     }
 }
 module.exports = {
-    GetAllNew,
-    CreateNew,
-    UpdateNew,
-    DeleteNew
+    getAllNew,
+    createNew,
+    updateNew,
+    deleteNew
 }

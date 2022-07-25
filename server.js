@@ -14,6 +14,7 @@ app.use('/public', express.static(pathPublicDirectory))
 
 app.use("/api/v1", rootRouter)
 
-const port = process.env.PORT || 7000
+const port = 7000
+// const port = process.env.PORT || 7000
 app.listen(port)
 
