@@ -5,8 +5,8 @@ var models = initModels(sequelize)
 const getAllNew = async (req, res) => {
     try {
         const querySql = `#graphql
-        select *, n.id as new_id from 
-        news as n
+        select *, n.id as new_id 
+        from news as n
         join news_type as nt on n.type_id = nt.id ;
         `;
         const [results] = await sequelize.query(querySql)

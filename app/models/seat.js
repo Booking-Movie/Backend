@@ -19,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
     price: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: 75
+      defaultValue: 1
     },
     showtime_id: {
       type: DataTypes.INTEGER,

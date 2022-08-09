@@ -6,7 +6,9 @@ const { checkRouter } = require('./check_exsit')
 const { cinemaRouter } = require('./cinema_route')
 const { movieRouter } = require('./movie_route')
 const { newsRouter } = require('./news_route')
+const { paymentRouter } = require('./payment_route')
 const { searchRouter } = require('./search_route')
+const { sendEmailRouter } = require('./sendemail_route')
 const { showtimeRouter } = require('./showtime_route')
 const { ticketRouter } = require('./ticket_route')
 const { userRouter } = require('./user_route')
@@ -23,6 +25,8 @@ rootRouter.use('/search', searchRouter)
 rootRouter.use('/actor', actorRouter)
 rootRouter.use('/news', newsRouter)
 rootRouter.use('/check', checkRouter)
+rootRouter.use('/payment', paymentRouter)
+rootRouter.use('/send-email', sendEmailRouter)
 
 module.exports = {
     rootRouter

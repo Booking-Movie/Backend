@@ -15,6 +15,18 @@ const SearchResult = async (req, res) => {
         res.status(500).send(error)
     }
 }
+const SearchUser = async (req, res) => {
+    const { user } = req.params
+    try {
+        const querySql = `#graphql
+        select * from users as u where u.username like '%${user}%'
+            `;
+        const [results] = await sequelize.query(querySql)
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 
 const FilterDate = async (req, res) => {
     try {
@@ -34,5 +46,6 @@ const FilterDate = async (req, res) => {
 
 module.exports = {
     SearchResult,
-    FilterDate
+    FilterDate,
+    SearchUser
 }

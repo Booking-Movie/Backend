@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
     status_seat: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      defaultValue: 1
+      defaultValue: 0
     },
     price: {
       type: DataTypes.INTEGER,

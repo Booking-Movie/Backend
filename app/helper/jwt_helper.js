@@ -14,7 +14,6 @@ const decodeToken = (token) => {
     }
 }
 
-
 module.exports = {
     generateToken,
     decodeToken
