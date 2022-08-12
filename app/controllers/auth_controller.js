@@ -22,7 +22,9 @@ const signUp = async (req, res) => {
         avatar: urlImage
     });
     res.status(201).send({
-        message: "Signup Success"
+        message: "Signup Success",
+        status_code: 201,
+        success: true
     })
 }
 

@@ -4,8 +4,8 @@ const { createPayment } = require('../controllers/payment_controller');
 
 const paymentRouter = Router()
 
-paymentRouter.post('/:user_id', updateStatusBooking)
-paymentRouter.put('/cancel-booking', cancelBookingSeat)
+// paymentRouter.put('/')
+// paymentRouter.post('/create-payment', createPayment)
 
 module.exports = {
     paymentRouter

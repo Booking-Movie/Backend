@@ -36,13 +36,29 @@ const getAllBooking = async (req, res) => {
     }
 }
 
+const getAllBookingByUserId = async (req, res) => {
+    const { id } = req.params
+    try {
+        const querySql = `#graphql
+        select sum(b.price) as total, s.code_theater as code_theater,  m.name_movie, u.username, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'booking_id',b.id,'seat_booking',b.name_seat, 'movie_id', b.movie_id, 'status_seat', b.status_seat,'seat_id', b.seat_id)) as booking_seat
+        from users as u 
+        join booking as b on u.id = b.user_id
+        join cinema as c on b.cinema_id = c.id
+        join movie as m on b.movie_id = m.id
+        join showtime as s on b.showtime_id = s.id
+        where u.id = ${id} and m.id = b.movie_id  group by s.id`;
+        const [results] = await sequelize.query(querySql)
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 
-const updateStatusSeatBooking = async (req, res) => {
+const updateStatusSeatBooking = async (req, res, next) => {
     const { booking_seat, user_booking, data } = req.body
-    console.log("🚀 ~ file: booking_controller.js ~ line 42 ~ updateStatusSeatBooking ~ req.body", data.id)
     try {
         if (booking_seat !== '') {
-            await booking_seat.forEach(async (seat) => {
+            booking_seat.forEach(async (seat) => {
                 await models.seat.update({
                     status_seat: true,
                     user_booking: user_booking,
@@ -53,24 +69,19 @@ const updateStatusSeatBooking = async (req, res) => {
                 })
             })
         }
-
-        res.status(200).send({
-            data: data,
-            message: "Update success"
-        })
+        next()
     } catch (error) {
         res.status(500).send(error)
     }
 }
 
-const updateStatusBooking = async (req, res) => {
-    const { user_id } = req.params
-    console.log("🚀 ~ file: booking_controller.js ~ line 69 ~ updateStatusBooking ~ user_id", user_id)
+const updateStatusBooking = async (req, res, next) => {
+    const { user_id } = req.body
     try {
         const querySql = `#graphql
         update booking set status_seat=true, price=0 where user_id = ${user_id}`;
         const [results] = await sequelize.query(querySql)
-        res.status(200).json(results);
+        next()
     } catch (error) {
         res.status(500).send(error)
     }
@@ -81,7 +92,7 @@ const cancelBookingSeat = async (req, res) => {
         req.body.forEach(async (booking) => {
             await models.booking.destroy({
                 where: {
-                    id: booking.booking_id
+                    seat_id: booking.seat_id
                 }
             })
         })
@@ -97,5 +108,6 @@ module.exports = {
     getAllBooking,
     updateStatusSeatBooking,
     updateStatusBooking,
-    cancelBookingSeat
+    cancelBookingSeat,
+    getAllBookingByUserId
 }

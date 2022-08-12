@@ -9,6 +9,7 @@ var _director_movie = require("./director_movie");
 var _movie = require("./movie");
 var _news = require("./news");
 var _news_type = require("./news_type");
+var _payment = require("./payment");
 var _seat = require("./seat");
 var _showtime = require("./showtime");
 var _users = require("./users");
@@ -24,6 +25,7 @@ function initModels(sequelize) {
   var movie = _movie(sequelize, DataTypes);
   var news = _news(sequelize, DataTypes);
   var news_type = _news_type(sequelize, DataTypes);
+  var payment = _payment(sequelize, DataTypes);
   var seat = _seat(sequelize, DataTypes);
   var showtime = _showtime(sequelize, DataTypes);
   var users = _users(sequelize, DataTypes);
@@ -68,6 +70,8 @@ function initModels(sequelize) {
   users.hasMany(booking, { as: "bookings", foreignKey: "user_id"});
   news.belongsTo(users, { as: "user", foreignKey: "user_id"});
   users.hasMany(news, { as: "newss", foreignKey: "user_id"});
+  payment.belongsTo(users, { as: "user", foreignKey: "user_id"});
+  users.hasMany(payment, { as: "payments", foreignKey: "user_id"});
 
   return {
     actor,
@@ -80,6 +84,7 @@ function initModels(sequelize) {
     movie,
     news,
     news_type,
+    payment,
     seat,
     showtime,
     users,

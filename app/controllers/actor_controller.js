@@ -31,7 +31,9 @@ const CreateActorDirector = async (req, res) => {
             })
         }
         res.status(200).send({
-            message: "Create Actor And Director Success"
+            message: "Create Actor And Director Success",
+            status_code: 200,
+            success: true
         })
     } catch (error) {
         res.status(500).send(error)

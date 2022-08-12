@@ -7,7 +7,12 @@ const models = initModels(sequelize)
 const findAllMovies = async (req, res) => {
     try {
         const movieList = await models.movie.findAll();
-        res.status(200).json(movieList);
+        res.status(200).json({
+            payload: movieList,
+            message: "Find All Movie Success",
+            status_code: 200,
+            success: true
+        });
     } catch (error) {
         res.status(500).send(error);
     }
@@ -22,7 +27,6 @@ const findDetailMovie = async (req, res) => {
     join actor_movie as am on m.id = am.movie_id
     join actor as a on am.actor_id = a.id where m.id = ${id} group by m.id`;
         const [results] = await sequelize.query(querySql)
-        console.log("🚀 ~ file: movie_controller.js ~ line 58 ~ findDetailMovie ~ results", results)
         res.status(200).json([results]);
     } catch (error) {
         res.status(500).send(error);

@@ -14,7 +14,9 @@ const createCinema = async (req, res) => {
         });
         if (newCinema !== null) {
             res.status(200).send({
-                message: "Create Cinema Success"
+                message: "Create Cinema Success",
+                status_code: 200,
+                success: true
             })
         }
     } catch (error) {
