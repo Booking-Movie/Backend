@@ -12,11 +12,17 @@ const createCinema = async (req, res) => {
             address,
             image: urlImage
         });
-        if (newCinema !== null) {
+        if (newCinema) {
             res.status(200).send({
                 message: "Create Cinema Success",
                 status_code: 200,
                 success: true
+            })
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
             })
         }
     } catch (error) {
@@ -27,7 +33,20 @@ const createCinema = async (req, res) => {
 const findAllCinema = async (rep, res) => {
     try {
         const cinemaList = await models.cinema.findAll();
-        res.status(200).json(cinemaList);
+        if (cinemaList) {
+            res.status(200).json({
+                payload: cinemaList,
+                message: "Get All Cinema Success",
+                status_code: 200,
+                success: true
+            });
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -39,7 +58,7 @@ const updateCinema = async (req, res) => {
     const { id } = req.body
     const { name_cinema, address } = req.body
     try {
-        await models.cinema.update({
+        const cinemaUpdate = await models.cinema.update({
             name_cinema: name_cinema,
             address: address,
             image: urlImage,
@@ -50,11 +69,19 @@ const updateCinema = async (req, res) => {
                 }
             }
         );
-        res.status(200).send({
-            message: "Edit Cinema Success",
-            status_code: 200,
-            success: true
-        })
+        if (cinemaUpdate) {
+            res.status(200).send({
+                message: "Edit Cinema Success",
+                status_code: 200,
+                success: true
+            })
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }

@@ -9,7 +9,7 @@ userRouter.post('/create-user', checkAuth, authorize('Admin'), uploadImageSingle
 userRouter.get('/find-all-users', findAllUser)
 userRouter.get('/detail/:id', [], findDetailUser)
 userRouter.put("/update-user", checkAuth, authorize('Admin'), uploadImageSingle("avatar"), updateUser)
-userRouter.delete("/delete-user/:id", checkAuth, authorize('Admin'), deleteUser)
+userRouter.delete('/delete-user/:id', checkAuth, authorize('Admin'), deleteUser)
 
 module.exports = {
     userRouter

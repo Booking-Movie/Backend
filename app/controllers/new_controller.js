@@ -10,18 +10,26 @@ const getAllNew = async (req, res) => {
         join news_type as nt on n.type_id = nt.id ;
         `;
         const [results] = await sequelize.query(querySql)
-        res.status(200).json(results);
+        if (results) {
+            res.status(200).json(results);
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }
 }
 
 const createNew = async (req, res) => {
+    const { file } = req;
+    const urlImage = `http://localhost:7000/${file.path}`;
+    const { new_title, new_introduction, new_body, new_conclusion, type_id, user_id } = req.body
     try {
-        const { file } = req;
-        const urlImage = `http://localhost:7000/${file.path}`;
-        const { new_title, new_introduction, new_body, new_conclusion, type_id, user_id } = req.body
-        await models.news.create({
+        const newOne = await models.news.create({
             new_title,
             new_introduction,
             new_body,
@@ -30,11 +38,13 @@ const createNew = async (req, res) => {
             user_id,
             new_image: urlImage
         });
-        res.status(200).send({
-            message: "Create New Success",
-            status_code: 200,
-            success: true
-        })
+        if (newOne) {
+            res.status(200).send({
+                message: "Create New Success",
+                status_code: 200,
+                success: true
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }
@@ -67,8 +77,8 @@ const updateNew = async (req, res) => {
     }
 }
 const deleteNew = async (req, res) => {
+    const { new_id } = req.params
     try {
-        const { new_id } = req.params
         const newInfo = await models.news.destroy({
             where: {
                 id: new_id
@@ -87,9 +97,6 @@ const deleteNew = async (req, res) => {
                 success: false
             })
         }
-        res.status(200).json({
-
-        })
     } catch (error) {
         res.status(500).send(error)
     }

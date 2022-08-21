@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('showtime', {
     id: {
       autoIncrement: true,
@@ -27,15 +27,6 @@ module.exports = function(sequelize, DataTypes) {
         model: 'cinema',
         key: 'id'
       }
-    },
-    movie_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'movie',
-        key: 'id'
-      }
     }
   }, {
     sequelize,
@@ -49,14 +40,6 @@ module.exports = function(sequelize, DataTypes) {
         fields: [
           { name: "id" },
           { name: "cinema_id" },
-          { name: "movie_id" },
-        ]
-      },
-      {
-        name: "movie_id",
-        using: "BTREE",
-        fields: [
-          { name: "movie_id" },
         ]
       },
       {

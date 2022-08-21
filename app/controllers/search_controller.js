@@ -10,7 +10,6 @@ const SearchResult = async (req, res) => {
             `;
         const [results] = await sequelize.query(querySql)
         res.status(200).json(results);
-
     } catch (error) {
         res.status(500).send(error)
     }

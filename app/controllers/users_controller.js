@@ -11,7 +11,20 @@ const findAllUser = async (rep, res) => {
                 exclude: ["password"],
             },
         });
-        res.status(200).send(userList);
+        if (userList) {
+            res.status(200).json({
+                payload: userList,
+                message: "Find All User Success",
+                status_code: 200,
+                success: true
+            });
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -19,9 +32,8 @@ const findAllUser = async (rep, res) => {
 
 const createUser = async (req, res) => {
     const { file } = req;
-    console.log("🚀 ~ file: users_controller.js ~ line 22 ~ createUser ~ file", file)
     const urlImage = `http://localhost:7000/${file.path}`;
-    const { username, password, fullname, address, email, phone, role_name } = req.body
+    const { username, password, fullname, address, email, phone, role } = req.body
     const salt = bcryptjs.genSaltSync(10);
     const hashPassword = bcryptjs.hashSync(password, salt);
     try {
@@ -32,15 +44,23 @@ const createUser = async (req, res) => {
             address,
             email,
             phone,
-            role_name,
+            role_name: role,
             avatar: urlImage
         });
-        res.status(201).json({
-            newUser,
-            message: "Create User Success",
-            status_code: 201,
-            success: true
-        })
+        if (newUser) {
+            res.status(201).json({
+                newUser,
+                message: "Create User Success",
+                status_code: 201,
+                success: true
+            })
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         req.status(500).send(error)
     }
@@ -63,7 +83,7 @@ const updateUser = async (req, res) => {
                 }
             })
         }
-        await models.users.update({
+        const userUpdate = await models.users.update({
             username: username,
             fullname: fullname,
             address: address,
@@ -78,22 +98,43 @@ const updateUser = async (req, res) => {
                 }
             }
         );
-        res.status(200).json({
-            username: username,
-            message: "Update Success",
-            status_code: 200,
-            success: true
-        })
+        if (userUpdate) {
+            res.status(200).json({
+                username: username,
+                message: "Update Success",
+                status_code: 200,
+                success: true
+            })
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }
 }
 
 const findDetailUser = async (req, res) => {
+    const { id } = req.params;
     try {
-        const { id } = req.params;
         const detailUser = await models.users.findByPk(id);
-        res.status(200).json(detailUser);
+        if (detailUser) {
+            res.status(200).json({
+                payload: detailUser,
+                message: "Find Detail User Success",
+                status_code: 200,
+                success: true
+            });
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -110,15 +151,14 @@ const deleteUser = async (req, res) => {
             },
         });
         if (User) {
-            res.status(200).send({
+            res.status(200).json({
                 username: User.username,
                 message: "Delete User Success",
                 status_code: 200,
                 success: true
             });
         } else {
-            res.status(403).send({
-                username: User.username,
+            res.status(403).json({
                 message: "User doesn't exist",
                 status_code: 403,
                 success: false

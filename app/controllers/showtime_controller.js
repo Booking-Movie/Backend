@@ -20,7 +20,6 @@ const createShowTime = async (req, res) => {
             code_theater,
             time_start,
             start_date,
-            movie_id,
             cinema_id
         });
         await models.cinema_movie.create({
@@ -28,12 +27,12 @@ const createShowTime = async (req, res) => {
             movie_id: movie_id,
             showtime_id: newShowTime.id,
         })
-        const seats = []
+        // const seats = []
         seatCodes.forEach((name_seat) => {
             const newSeat = models.seat.create({
                 name_seat, showtime_id: newShowTime.id
             })
-            seats.push(newSeat)
+            // seats.push(newSeat)
         })
         res.status(200).send({
             time: time_start,
@@ -47,8 +46,8 @@ const createShowTime = async (req, res) => {
 }
 
 const findAllSeatByShowTimeId = async (req, res) => {
+    const { id } = req.params
     try {
-        const { id } = req.params
         const findSeat = await models.showtime.findAll({
             include: [{
                 model: models.seat,
@@ -58,7 +57,15 @@ const findAllSeatByShowTimeId = async (req, res) => {
                 }
             }]
         })
-        res.status(200).send(findSeat)
+        if (findSeat) {
+            res.status(200).json(findSeat)
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }

@@ -6,7 +6,15 @@ var models = initModels(sequelize)
 const FindAllActor = async (req, res) => {
     try {
         const actorList = await models.actor.findAll()
-        res.status(200).json(actorList)
+        if (actorList) {
+            res.status(200).json(actorList)
+        } else {
+            res.status(404).json({
+                message: 'Not Found!',
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }
@@ -16,18 +24,44 @@ const CreateActorDirector = async (req, res) => {
     try {
         if (actorList !== '') {
             actorList.forEach(async (actor) => {
-                await models.actor_movie.create({
+                const createActor = await models.actor_movie.create({
                     movie_id: movie_id,
                     actor_id: actor.value
                 })
+                if (createActor) {
+                    res.status(200).send({
+                        message: "Create ActorSuccess",
+                        status_code: 200,
+                        success: true
+                    })
+                } else {
+                    res.status(404).send({
+                        message: "Not Found",
+                        status_code: 404,
+                        success: false
+                    })
+                }
             })
         }
         if (directorList !== '') {
             directorList.forEach(async (director) => {
-                await models.director_movie.create({
+                const createDirector = await models.director_movie.create({
                     movie_id: movie_id,
                     director_id: director.value
                 })
+                if (createDirector) {
+                    res.status(200).send({
+                        message: "Create Director Success",
+                        status_code: 200,
+                        success: true
+                    })
+                } else {
+                    res.status(404).send({
+                        message: "Not Found",
+                        status_code: 404,
+                        success: false
+                    })
+                }
             })
         }
         res.status(200).send({
@@ -43,7 +77,15 @@ const CreateActorDirector = async (req, res) => {
 const FindAllDirector = async (req, res) => {
     try {
         const directorList = await models.director.findAll()
-        res.status(200).json(directorList)
+        if (directorList) {
+            res.status(200).json(directorList)
+        } else {
+            res.status(404).json({
+                message: "Not Found!",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
         res.status(500).send(error)
     }
@@ -58,7 +100,15 @@ const FindAllDirectorByMovieId = async (req, res) => {
         join  director_movie as dm on m.id = dm.movie_id
         join director as d  on dm.director_id = d.id where m.id = ${id} `;
         const [results] = await sequelize.query(querySql)
-        res.status(200).json(results);
+        if (results) {
+            res.status(200).json(results);
+        } else {
+            res.status(404).json({
+                message: "Not Found",
+                status_code: 404,
+                success: false
+            })
+        }
     } catch (error) {
 
     }

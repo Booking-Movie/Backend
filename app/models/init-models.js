@@ -31,10 +31,8 @@ function initModels(sequelize) {
   var users = _users(sequelize, DataTypes);
 
   actor.belongsToMany(movie, { as: 'movie_id_movies', through: actor_movie, foreignKey: "actor_id", otherKey: "movie_id" });
-  cinema.belongsToMany(movie, { as: 'movie_id_movie_showtimes', through: showtime, foreignKey: "cinema_id", otherKey: "movie_id" });
   director.belongsToMany(movie, { as: 'movie_id_movie_director_movies', through: director_movie, foreignKey: "director_id", otherKey: "movie_id" });
   movie.belongsToMany(actor, { as: 'actor_id_actors', through: actor_movie, foreignKey: "movie_id", otherKey: "actor_id" });
-  movie.belongsToMany(cinema, { as: 'cinema_id_cinemas', through: showtime, foreignKey: "movie_id", otherKey: "cinema_id" });
   movie.belongsToMany(director, { as: 'director_id_directors', through: director_movie, foreignKey: "movie_id", otherKey: "director_id" });
   actor_movie.belongsTo(actor, { as: "actor", foreignKey: "actor_id"});
   actor.hasMany(actor_movie, { as: "actor_movies", foreignKey: "actor_id"});
@@ -54,8 +52,6 @@ function initModels(sequelize) {
   movie.hasMany(cinema_movie, { as: "cinema_movies", foreignKey: "movie_id"});
   director_movie.belongsTo(movie, { as: "movie", foreignKey: "movie_id"});
   movie.hasMany(director_movie, { as: "director_movies", foreignKey: "movie_id"});
-  showtime.belongsTo(movie, { as: "movie", foreignKey: "movie_id"});
-  movie.hasMany(showtime, { as: "showtimes", foreignKey: "movie_id"});
   news.belongsTo(news_type, { as: "type", foreignKey: "type_id"});
   news_type.hasMany(news, { as: "newss", foreignKey: "type_id"});
   booking.belongsTo(seat, { as: "seat", foreignKey: "seat_id"});

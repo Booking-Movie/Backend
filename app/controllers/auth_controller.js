@@ -9,6 +9,11 @@ var models = initModels(sequelize)
 const signUp = async (req, res) => {
     const { file } = req;
     const urlImage = `http://localhost:7000/${file.path}`;
+    /**
+     * Mã hóa password
+     * 1. Tạo ra một chuỗi ngẩu nhiên
+     * 2. Mã hóa passwork: kết hợp chuỗi ngẩu nhiên
+     */
     const { username, password, fullname, address, email, phone, } = req.body
     const salt = bcryptjs.genSaltSync(10);
     const hashPassword = bcryptjs.hashSync(password, salt);
@@ -37,6 +42,7 @@ const signIn = async (req, res) => {
             }
         });
         if (userLogin) {
+            // So sánh password
             const isAuth = bcryptjs.compareSync(password, userLogin.password)
             const payload = {
                 id: userLogin.id,
@@ -58,7 +64,7 @@ const signIn = async (req, res) => {
             } else {
                 res.status(403).send({
                     message: "Password Incorrect",
-                    status_code: 201,
+                    status_code: 403,
                     success: false
                 })
             }
