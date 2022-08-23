@@ -7,24 +7,11 @@ const bookingTicket = async (req, res) => {
     const { danhSachVe } = req.body
     const { user_id, movie_id, cinema_id } = req.body
     try {
-        danhSachVe.forEach(async (booking) => {
+        danhSachVe.forEach((booking) => {
             // await models.seat.update({ status_seat: true, user_booking: user_booking }, { where: { id: booking.id } })
-            const ticketBooking = await models.booking.create({ showtime_id: booking.showtime_id, seat_id: booking.id, name_seat: booking.name_seat, price: booking.price, user_id: user_id, movie_id: movie_id, cinema_id: cinema_id })
-            if (ticketBooking) {
-                res.status(200).json({
-                    message: "Booking Success",
-                    status_code: 200,
-                    success: true
-                })
-            } else {
-                res.status(404).json({
-                    message: "Not Found",
-                    status_code: 404,
-                    success: false
-                })
-            }
+            models.booking.create({ showtime_id: booking.showtime_id, seat_id: booking.id, name_seat: booking.name_seat, price: booking.price, user_id: user_id, movie_id: movie_id, cinema_id: cinema_id })
         })
-        // res.status(200).json(danhSachVe)
+        res.status(200).json(danhSachVe)
     } catch (error) {
         res.status(500).send(error)
     }
@@ -109,7 +96,6 @@ const updateStatusBooking = async (req, res, next) => {
         const querySql = `#graphql
         update booking set status_seat=true, price=0 where user_id = ${user_id}`;
         await sequelize.query(querySql)
-        next()
     } catch (error) {
         res.status(500).send(error)
     }

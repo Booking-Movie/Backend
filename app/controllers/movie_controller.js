@@ -78,8 +78,7 @@ const finAllTimeOfNameCinema = async (req, res) => {
         select c.name_cinema JSON_ARRAYAGG(json_object('id',s.id, 'time_start',s.time_start)) as show_time
         from movie as m
         join showtime as s on m.id = s.movie_id
-        join cinema as c on s.cinema_id = c.id where c.name_cinema like '${name_cinema}%'
-        group by c.id order by s.time_start`;
+        join cinema as c on s.cinema_id = c.id where c.name_cinema like '${name_cinema}%' group by c.id order by s.time_start`;
         const [results] = await sequelize.query(querySql)
         if (results) {
             res.status(200).json(results);
@@ -229,8 +228,8 @@ const getInfoMovie = async (req, res) => {
 }
 
 const findSeemore = async (req, res) => {
+    const { id } = req.params
     try {
-        const { id } = req.params
         const newSeemore = await models.movie.findAll({
             where: {
                 status_movie: id

@@ -24,44 +24,18 @@ const CreateActorDirector = async (req, res) => {
     try {
         if (actorList !== '') {
             actorList.forEach(async (actor) => {
-                const createActor = await models.actor_movie.create({
+                await models.actor_movie.create({
                     movie_id: movie_id,
                     actor_id: actor.value
                 })
-                if (createActor) {
-                    res.status(200).send({
-                        message: "Create ActorSuccess",
-                        status_code: 200,
-                        success: true
-                    })
-                } else {
-                    res.status(404).send({
-                        message: "Not Found",
-                        status_code: 404,
-                        success: false
-                    })
-                }
             })
         }
         if (directorList !== '') {
             directorList.forEach(async (director) => {
-                const createDirector = await models.director_movie.create({
+                await models.director_movie.create({
                     movie_id: movie_id,
                     director_id: director.value
                 })
-                if (createDirector) {
-                    res.status(200).send({
-                        message: "Create Director Success",
-                        status_code: 200,
-                        success: true
-                    })
-                } else {
-                    res.status(404).send({
-                        message: "Not Found",
-                        status_code: 404,
-                        success: false
-                    })
-                }
             })
         }
         res.status(200).send({

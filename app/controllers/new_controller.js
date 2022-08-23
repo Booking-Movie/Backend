@@ -39,10 +39,16 @@ const createNew = async (req, res) => {
             new_image: urlImage
         });
         if (newOne) {
-            res.status(200).send({
+            res.status(200).json({
                 message: "Create New Success",
                 status_code: 200,
                 success: true
+            })
+        } else {
+            res.status(404).json({
+                message: "Not Found!",
+                status_code: 404,
+                success: false
             })
         }
     } catch (error) {
