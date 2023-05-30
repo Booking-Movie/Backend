@@ -15,21 +15,25 @@ const models = initModels(sequelize)
 const seatCodes = ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10"]
 const createShowTime = async (req, res) => {
     const { code_theater, time_start, movie_id, cinema_id, start_date } = req.body
+    console.log("🚀 ~ file: showtime_controller.js ~ line 18 ~ createShowTime ~ req.body", req.body)
     try {
         const newShowTime = await models.showtime.create({
             code_theater,
             time_start,
             start_date,
-            cinema_id
         });
-        await models.cinema_movie.create({
-            cinema_id: cinema_id,
-            movie_id: movie_id,
-            showtime_id: newShowTime.id,
-        })
+        if (cinema_id) {
+            cinema_id.forEach(async (cinema) => {
+                await models.cinema_movie.create({
+                    cinema_id: cinema.value,
+                    movie_id: movie_id,
+                    showtime_id: newShowTime.id,
+                })
+            })
+        }
         // const seats = []
         seatCodes.forEach((name_seat) => {
-            const newSeat = models.seat.create({
+            models.seat.create({
                 name_seat, showtime_id: newShowTime.id
             })
             // seats.push(newSeat)

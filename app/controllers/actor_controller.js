@@ -20,21 +20,30 @@ const FindAllActor = async (req, res) => {
     }
 }
 const CreateActorDirector = async (req, res) => {
-    const { movie_id, actorList, directorList } = req.body
+    const { movie_id, actor, director } = req.body
+    const arrayActor = actor.split(",") || ''
+    const arrayDirector = director.split(",") || ''
     try {
-        if (actorList !== '') {
-            actorList.forEach(async (actor) => {
-                await models.actor_movie.create({
-                    movie_id: movie_id,
-                    actor_id: actor.value
-                })
+
+        arrayActor.forEach(async (item) => {
+            console.log("🚀 ~ file: actor_controller.js ~ line 37 ~ actorList.forEach ~ actor", item)
+            const actorNew = await models.actor.create({
+                name_actor: item
             })
-        }
-        if (directorList !== '') {
-            directorList.forEach(async (director) => {
+            await models.actor_movie.create({
+                movie_id: movie_id,
+                actor_id: actorNew.id
+            })
+        })
+
+        if (director !== '') {
+            arrayDirector.forEach(async (item) => {
+                const directorNew = await models.director.create({
+                    name_director: item
+                })
                 await models.director_movie.create({
                     movie_id: movie_id,
-                    director_id: director.value
+                    director_id: directorNew.id
                 })
             })
         }

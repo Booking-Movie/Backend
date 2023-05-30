@@ -68,7 +68,7 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { file } = req;
-    const urlImage = `http://localhost:7000/${file.path}`;
+    // const urlImage = `http://localhost:7000/${file.path}`;
     const { id } = req.body
     const { username, password, fullname, address, email, phone, role } = req.body
     const salt = bcryptjs.genSaltSync(10);
@@ -83,6 +83,19 @@ const updateUser = async (req, res) => {
                 }
             })
         }
+        if (file === undefined) {
+            console.log("Don't changes")
+        } else {
+            const urlImage = `http://localhost:7000/${file.path}`;
+            await models.users.update({
+                avatar: urlImage,
+            }, {
+                where: {
+                    id
+                }
+            }
+            )
+        }
         const userUpdate = await models.users.update({
             username: username,
             fullname: fullname,
@@ -90,7 +103,6 @@ const updateUser = async (req, res) => {
             email: email,
             phone: phone,
             role_name: role,
-            avatar: urlImage,
         },
             {
                 where: {

@@ -42,7 +42,6 @@ const signIn = async (req, res) => {
             }
         });
         if (userLogin) {
-            // So sánh password
             const isAuth = bcryptjs.compareSync(password, userLogin.password)
             const payload = {
                 id: userLogin.id,
@@ -51,9 +50,6 @@ const signIn = async (req, res) => {
             }
             if (isAuth) {
                 const accessToken = generateToken(payload)
-                // const secretKey = "phongLVH";
-                // const accessToken = jwt.sign(payload, secretKey, { expiresIn: 60 * 60 })
-                // res.headers('Authorization', 'Bearer ' + accessToken).send(accessToken);
                 res.status(200).send({
                     message: "Login Success",
                     payload,
@@ -73,8 +69,10 @@ const signIn = async (req, res) => {
         res.status(500).send(error);
     }
 };
-
-
+// So sánh password
+// const secretKey = "phongLVH";
+// const accessToken = jwt.sign(payload, secretKey, { expiresIn: 60 * 60 })
+// res.headers('Authorization', 'Bearer ' + accessToken).send(accessToken);
 
 const checkAuth = (req, res, next) => {
     const accessToken = req.headers.authorization.split(' ')[1]

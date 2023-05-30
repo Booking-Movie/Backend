@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('movie', {
     id: {
       autoIncrement: true,
@@ -42,6 +42,11 @@ module.exports = function(sequelize, DataTypes) {
     image_movie: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    movie_status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: 0
     }
   }, {
     sequelize,

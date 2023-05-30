@@ -6,7 +6,11 @@ const models = initModels(sequelize)
 
 const findAllMovies = async (req, res) => {
     try {
-        const movieList = await models.movie.findAll();
+        const movieList = await models.movie.findAll({
+            where: {
+                movie_status: true
+            }
+        });
         if (movieList) {
             res.status(200).json({
                 payload: movieList,
@@ -52,7 +56,7 @@ const finAllTimeOfMovie = async (req, res) => {
     const { id } = req.params;
     try {
         const querySql = `#graphql
-        select c.name_cinema,c.id as cinema_id, m.id, JSON_ARRAYAGG(json_object('id',s.id, 'time_start',s.time_start, 'start_date', s.start_date)) as show_time
+        select c.name_cinema,c.id as cinema_id, m.id,s.start_date, JSON_ARRAYAGG(json_object('id',s.id, 'time_start',s.time_start, 'start_date', s.start_date)) as show_time
         from movie as m
         join cinema_movie as cm on m.id = cm.movie_id
         join cinema as c on cm.cinema_id = c.id
@@ -108,6 +112,7 @@ const createMovie = async (req, res) => {
             nation,
             status_movie,
             evaluate,
+            movie_status: true,
             image_movie: urlImage
         });
 
@@ -133,10 +138,22 @@ const createMovie = async (req, res) => {
 
 const updateMovie = async (req, res) => {
     const { file } = req;
-    const urlImage = `http://localhost:7000/${file.path}`;
     const { id } = req.body
     const { name_movie, comming_data, des_movie, trailer, nation, director, status_movie, evaluate, time_show } = req.body
     try {
+        if (file === undefined) {
+            console.log("Don't changes")
+        } else {
+            const urlImage = `http://localhost:7000/${file.path}`;
+            await models.movie.update({
+                image_movie: urlImage
+            }, {
+                where: {
+                    id
+                }
+            }
+            )
+        }
         const movieUpdate = await models.movie.update({
             name_movie: name_movie,
             comming_data: comming_data,
@@ -147,7 +164,6 @@ const updateMovie = async (req, res) => {
             director: director,
             status_movie: status_movie,
             evaluate: evaluate,
-            image_movie: urlImage
         },
             {
                 where: {
@@ -176,28 +192,47 @@ const updateMovie = async (req, res) => {
 
 const deleteMovie = async (req, res) => {
     const { id } = req.params;
+    console.log("🚀 ~ file: movie_controller.js ~ line 190 ~ deleteMovie ~ id", id)
     try {
-        const movie = await models.movie.findByPk(id)
-        await models.movie.destroy({
-            where: {
-                id,
+        const movie = await models.movie.update(
+            {
+                movie_status: false
             },
+            {
+                where: {
+                    id
+                }
+            }
+        )
+        res.status(200).json({
+            name: movie.name_movie,
+            message: "Delete Success",
+            status_code: 200,
+            success: true
         })
-        if (movie) {
-            res.status(200).json({
-                name: movie.name_movie,
-                message: "Delete Success",
-                status_code: 200,
-                success: true
-            })
-        } else {
-            res.status(403).json({
-                message: "Movie doesn't exist",
-                status_code: 403,
-                success: false
-            })
+        // const image = movieDetail.image_movie
+        // const cut = image.split("/") || ''
+        // const arrayString = cut[cut.length - 1]
+        // await models.movie.update({
+        //     where: {
+        //         id,
+        //     },
+        // })
+        // if (movie) {
+        //     res.status(200).json({
+        //         name: movie.name_movie,
+        //         message: "Delete Success",
+        //         status_code: 200,
+        //         success: true
+        //     })
+        // } else {
+        //     res.status(403).json({
+        //         message: "Movie doesn't exist",
+        //         status_code: 403,
+        //         success: false
+        //     })
 
-        }
+        // }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -206,11 +241,11 @@ const getInfoMovie = async (req, res) => {
     try {
         const { id } = req.params;
         const querySql = `#graphql
-        select m.id as movie_id, m.name_movie, s.code_theater, s.start_date, c.name_cinema, c.address, s.time_start from 
+          select m.id as movie_id, m.name_movie, s.code_theater, s.start_date, c.name_cinema, address, s.time_start from 
         showtime as s
-        join cinema as c on s.cinema_id = c.id 
-        join cinema_movie cm on c.id = cm.cinema_id
-        join movie as m on cm.movie_id = m.id where s.id=${id}  group by c.id order by s.time_start;
+        join cinema_movie cm on s.id = cm.showtime_id
+        join cinema as c on cm.cinema_id = c.id 
+        join movie as m on cm.movie_id = m.id where s.id=${id} group by s.id order by s.time_start;
         `;
         const [results] = await sequelize.query(querySql)
         if (results) {
@@ -229,6 +264,7 @@ const getInfoMovie = async (req, res) => {
 
 const findSeemore = async (req, res) => {
     const { id } = req.params
+    console.log("🚀 ~ file: movie_controller.js ~ line 266 ~ findSeemore ~ id", id)
     try {
         const newSeemore = await models.movie.findAll({
             where: {

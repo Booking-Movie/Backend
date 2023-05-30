@@ -7,6 +7,7 @@ const { cinemaRouter } = require('./cinema_route')
 const { movieRouter } = require('./movie_route')
 const { newsRouter } = require('./news_route')
 const { paymentRouter } = require('./payment_route')
+const { saleRouter } = require('./sale_router')
 const { searchRouter } = require('./search_route')
 const { sendEmailRouter } = require('./sendemail_route')
 const { showtimeRouter } = require('./showtime_route')
@@ -27,6 +28,7 @@ rootRouter.use('/news', newsRouter)
 rootRouter.use('/check', checkRouter)
 rootRouter.use('/payment', paymentRouter)
 rootRouter.use('/send-email', sendEmailRouter)
+rootRouter.use('/sale', saleRouter)
 
 module.exports = {
     rootRouter

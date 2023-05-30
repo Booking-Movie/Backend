@@ -17,6 +17,8 @@ dotenv.config();
 app.use(express.json())
 
 
+
+
 // Setup static file
 // Nối đường dẫn dùng path.join
 // Biến __dirname dùng để dây đường dẫn đúng cho các thiết bị

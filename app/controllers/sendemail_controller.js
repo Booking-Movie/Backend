@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer')
 const sendEmail = async (req, res) => {
     try {
         const { email, booking_seat, user_booking, name_movie, name_cinema, time_start, start_date, code_theater } = req.body
+        console.log("🚀 ~ file: sendemail_controller.js:7 ~ sendEmail ~ code_theater", code_theater)
         const { id, status } = req.body.data
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -17,12 +18,13 @@ const sendEmail = async (req, res) => {
 
         booking_seat.forEach((seat) => {
             console.log("🚀 ~ file: sendemail_controller.js ~ line 19 ~ content ~ seat", seat.seat_booking)
+            console.log("🚀 ~ file: sendemail_controller.js:39 ~ booking_seat.forEach ~ seat", seat)
             transporter.sendMail({
                 from: 'giahuy231997@gmail.com', // sender address
                 to: email, // list of receivers
                 subject: `Hi, ${user_booking}`, // Subject line
                 text: `Your ticket has been generated and sent to your email`, // plain text body
-                html: `<div><h1>Booking Confirmation</h1></div><p>Movie Name: <b>${name_movie}</b></p><p>Show Date And Time: <b>${moment(start_date).format('MMM Do YY')} - ${moment(time_start, 'HH:mm:ss').format('HH:mm')} - ${code_theater}</b></p><p>Location: <b>${name_cinema} </b></p><p>Booking Seat: <b>${seat.seat_booking},</b></p> <p>Payment Status: <b>${status}</b> <p>Payment ID: <b>${id}</b></p>`, // html body // html body
+                html: `<div><h1>Booking Confirmation</h1></div><p>Movie Name: <b>${name_movie}</b></p><p>Show Date And Time: <b>${moment(start_date).format('MMM Do YY')} - ${moment(time_start, 'HH:mm:ss').format('HH:mm')} - ${code_theater}</b></p><p>Location: <b>${name_cinema} </b></p><p>Booking Seat: <b>${seat.seat_booking}</b></p> <p>Payment Status: <b>${status}</b> <p>Payment ID: <b>${id}</b></p>`, // html body // html body
             }, (err) => {
                 if (err) {
                     return res.json({

@@ -8,7 +8,7 @@ const bookingTicket = async (req, res) => {
     const { user_id, movie_id, cinema_id } = req.body
     try {
         danhSachVe.forEach((booking) => {
-            // await models.seat.update({ status_seat: true, user_booking: user_booking }, { where: { id: booking.id } })
+            // await models.seat.update({ status_seat: true, user_booking: user_booking }, { where: { id: booking.id } })   
             models.booking.create({ showtime_id: booking.showtime_id, seat_id: booking.id, name_seat: booking.name_seat, price: booking.price, user_id: user_id, movie_id: movie_id, cinema_id: cinema_id })
         })
         res.status(200).json(danhSachVe)
@@ -21,13 +21,13 @@ const getAllBooking = async (req, res) => {
     const { id } = req.params
     try {
         const querySql = `#graphql
-        select sum(b.price) as total,m.id as movie_id, s.id as showtime_id,s.code_theater as code_theater, u.email as user_email, m.name_movie, u.username, u.phone, u.email, m.image_movie, u.fullname, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'booking_id',b.id,'seat_booking',b.name_seat, 'movie_id', b.movie_id, 'status_seat', b.status_seat,'seat_id', b.seat_id)) as booking_seat
+         select sum(b.price) as total,m.id as movie_id, c.id as cinema_id, s.id as showtime_id,s.code_theater as code_theater, u.email as user_email, m.name_movie, u.username, u.phone, u.email, m.image_movie, u.fullname, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'booking_id',b.id,'seat_booking',b.name_seat, 'movie_id', b.movie_id, 'status_seat', b.status_seat,'seat_id', b.seat_id)) as booking_seat
         from cinema as c 
         join booking as b on c.id = b.cinema_id
         join users as u on b.user_id = u.id
         join movie as m on b.movie_id = m.id
         join showtime as s on b.showtime_id = s.id
-        where s.id = ${id} and b.status_seat = false  group by s.id order by m.id`;
+        where s.id = ${id} and b.status_seat = false  group by c.id order by m.id`;
         const [results] = await sequelize.query(querySql)
         if (results) {
             res.status(200).json(results);
@@ -47,7 +47,7 @@ const getAllBookingByUserId = async (req, res) => {
     const { id } = req.params
     try {
         const querySql = `#graphql
-        select sum(b.price) as total, s.code_theater as code_theater,  m.name_movie, u.username, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'booking_id',b.id,'seat_booking',b.name_seat, 'movie_id', b.movie_id, 'status_seat', b.status_seat,'seat_id', b.seat_id)) as booking_seat
+        select sum(b.price) as total, s.code_theater as code_theater,m.id as movie_id, m.name_movie, u.username, c.name_cinema,s.start_date, s.time_start, JSON_ARRAYAGG(json_object( 'booking_id',b.id,'seat_booking',b.name_seat, 'movie_id', b.movie_id, 'status_seat', b.status_seat,'seat_id', b.seat_id)) as booking_seat
         from users as u 
         join booking as b on u.id = b.user_id
         join cinema as c on b.cinema_id = c.id
@@ -83,8 +83,8 @@ const updateStatusSeatBooking = async (req, res, next) => {
                     }
                 })
             })
+            next()
         }
-        next()
     } catch (error) {
         res.status(500).send(error)
     }
